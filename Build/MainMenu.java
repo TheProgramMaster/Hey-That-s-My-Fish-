@@ -18,8 +18,8 @@ public class MainMenu extends javax.swing.JFrame implements ActionListener{
         Image img = ImageIO.read(backgroundImageURL);
         //Found code from https://stackoverflow.com/questions/21356609/set-an-image-as-background-to-jframe
         setLayout(new BorderLayout());
+        JPanel buttonPanel = new JPanel();
         JLabel background = new JLabel(new ImageIcon(img));
-        add(background);
         background.setLayout(new FlowLayout());
         JLabel label = new JLabel("Made by Gavin, Kapil, and Maria!");
         onePlayerButton.addActionListener(this);
@@ -27,8 +27,11 @@ public class MainMenu extends javax.swing.JFrame implements ActionListener{
         background.add(onePlayerButton);
         background.add(twoPlayerButton);
         background.add(label);
-        setSize(500,500);
-        pack();
+        buttonPanel.add(background);
+        //setSize(500,500);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        buttonPanel.setPreferredSize(new Dimension(JFrame.MAXIMIZED_HORIZ,JFrame.MAXIMIZED_VERT));
+        add(buttonPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -40,8 +43,11 @@ public class MainMenu extends javax.swing.JFrame implements ActionListener{
         // TODO Auto-generated method stub
         if(e.getSource() == onePlayerButton){
             System.out.println("You have selected to play a one-player game!");
+            dispose();
         }else if(e.getSource() == twoPlayerButton){
             System.out.println("You have selected to play a two player game!");
+            dispose();
+            TwoPlayerGameScreen two = new TwoPlayerGameScreen();
         }
     }
 }
