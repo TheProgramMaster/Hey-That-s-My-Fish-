@@ -32,40 +32,36 @@ public class BoardAndMovement {
          * logic of when to remove the spot****
          */
     }
-    public void setDirections(){
-        //each array contains 3 values representing q,r, and s (direction[n][0-2])
-        //q is the movement \, r is the movement -, and s is the movement /
-
-        // \ up
-        direction[0][0] = 0;
-        direction[0][1] = -1;
-        direction[0][2] = 1;
-        // \ down 
-        direction[1][0] = 0;
-        direction[1][1] = 1;
-        direction[1][2] = -1;
-        
-        // - left
-        direction[2][0] = -1;
-        direction[2][1] = 0;
-        direction[2][2] = 1;
-        // - right 
-        direction[3][0] = 1;
-        direction[3][1] = 0;
-        direction[3][2] = -1;
-
-        // / up
-        direction[4][0] = 1;
-        direction[4][1] = -1;
-        direction[4][2] = 0;
-        // / down
-        direction[5][0] = -1;
-        direction[5][1] = 1;
-        direction[5][2] = 0;
-    }
 
     public void setStartSpots(){
-        //TO DO: add all coordinates to activeSpots
+        activeSpots.clear();
+        
+    }
+
+    //takes two int[] of 3 values and returns an int[] of the direction between the two points
+    //returns null if the desired cannot be accessed in a straight line
+    public int[] getDirection(int[] current, int[] desired) {
+        //each array contains 3 values representing q,r, and s
+        //q is the movement \, r is the movement -, and s is the movement /
+
+        int q = current[0] - desired[0];
+        int r = current[1] - desired[1];
+        int s = current[2] - desired[2];
+
+        if(q == 0 && r > 0 && s < 0)
+            return new int[]{0,-1,1};
+        else if(q == 0 && r < 0 && s > 0)
+            return new int[]{0,1,-1};
+        else if(q < 0 && r == 0 && s > 0)
+            return new int[]{-1,0,1};
+        else if(q > 0 && r == 0 && s < 0)
+            return new int[]{1,0,-1};
+        else if(q > 0 && r < 0 && s == 0)
+            return new int[]{1,-1,0};
+        else if(q < 0 && r > 0 && s == 0)
+            return new int[]{-1,1,0};
+        else
+            return null;    
     }
 
     public void removeSpot(int[] spot){ 
@@ -80,7 +76,6 @@ public class BoardAndMovement {
                 System.out.println(Arrays.toString(spot) + " is not in the array");
             }
         }
-
     }
 
     //NOTE: Only works if you do not hand the actual memory address from activeSpots
