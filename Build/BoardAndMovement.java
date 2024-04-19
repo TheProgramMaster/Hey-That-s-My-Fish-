@@ -6,18 +6,10 @@ import java.util.Random;
 
 public class BoardAndMovement {
     public static ArrayList<int[]> activeSpots = new ArrayList<>();
-    public static void main(String[] args) {
-        BoardAndMovement bm = new BoardAndMovement();  
-        bm.setStartSpots();
-        for(int[] i : activeSpots){
-            System.out.println(Arrays.toString(i));
-        }
-        /*
-         * Still to do: 
-         * setStartSpots
-         * Determine which direction the player is attempting to go 
-         * logic of when to remove the spot****
-         */
+    private static ArrayList<Penguin> activePenguins;
+
+    BoardAndMovement(ArrayList<Penguin> penguins) {
+        activePenguins = penguins;
     }
 
     public void setStartSpots(){
@@ -43,6 +35,7 @@ public class BoardAndMovement {
             } else {
                 continue;
             }
+            
             //NOTE: Just hard-coding all the new lines
             //There is probably a more efficient way of doing this 
             if(q == 11 && s == 5){
@@ -86,14 +79,14 @@ public class BoardAndMovement {
         //each array contains 3 values representing q,r, and s
         //q is the movement \, r is the movement -, and s is the movement /
 
-        int q = current[0] - desired[0];
-        int r = current[1] - desired[1];
-        int s = current[2] - desired[2];
+        int q = desired[0] - current[0];
+        int r = desired[1] - current[1];
+        int s = desired[2] - current[2];
 
         if(q == 0 && r > 0 && s < 0)
-            return new int[]{0,-1,1};
-        else if(q == 0 && r < 0 && s > 0)
             return new int[]{0,1,-1};
+        else if(q == 0 && r < 0 && s > 0)
+            return new int[]{0,-1,1};
         else if(q < 0 && r == 0 && s > 0)
             return new int[]{-1,0,1};
         else if(q > 0 && r == 0 && s < 0)
@@ -103,45 +96,50 @@ public class BoardAndMovement {
         else if(q < 0 && r > 0 && s == 0)
             return new int[]{-1,1,0};
         else
-            return null;    
+            return null;    //Not a straight path
     }
 
-    public void removeSpot(int[] spot){ 
+    public void removeSpot(int[] oldLocation){ 
         for (int[] tempArray : activeSpots) {
-            if(Arrays.equals(tempArray, spot))
+            if(Arrays.equals(Arrays.copyOf(tempArray,3), oldLocation))
             {
                 activeSpots.remove(tempArray);
-                System.out.println(Arrays.toString(spot) + " removed successfully");
+                System.out.println(Arrays.toString(oldLocation) + " removed successfully");
                 break;
             }
             else if(activeSpots.indexOf(tempArray) == activeSpots.size()-1){
-                System.out.println(Arrays.toString(spot) + " is not in the array");
+                System.out.println(Arrays.toString(oldLocation) + " is not in the array");
             }
         }
     }
 
+
+    //TO DO: Check if the space is already occupied
     //NOTE: Only works if you do not hand the actual memory address from activeSpots
     //If current's address is in activeSpots, current's values will change, messing up the board
     public boolean validMove(int[] current, int[] desired, int[] direction) {
-        //if current not in activeSpots return false
-        for (int[] tempArray : activeSpots) {
-            if(Arrays.equals(tempArray, current))
+        //if the space is already occupied
+        for (Penguin p : activePenguins) {
+            if(Arrays.equals(Arrays.copyOf(p.location,3),current))
+                return false;
+        }
+        
+        //Only continue if activeSpots contains the equivelent array
+        for (int[] tempArray : activeSpots) { 
+            if(Arrays.equals(Arrays.copyOf(tempArray,3), current)) {
                 break;
+            }
             else if(tempArray.equals(activeSpots.get(activeSpots.size()-1)))
                 {
-                    //System.out.println("Not in activeSpots");
                     return false;
                 }
         }
-        //else if current is the desired location
+
         if(Arrays.equals(current,desired))
         {
-            //System.out.println("Current == desired");
             return true;
         }
-        //else
         else {
-            //System.out.println("Not yet equal");
             for(int i = 0; i < 3; i++) {
                 current[i] += direction[i];
             }
