@@ -114,7 +114,6 @@ public class BoardAndMovement {
     }
 
 
-    //TO DO: Check if the space is already occupied
     //NOTE: Only works if you do not hand the actual memory address from activeSpots
     //If current's address is in activeSpots, current's values will change, messing up the board
     public boolean validMove(int[] current, int[] desired, int[] direction) {

@@ -1,7 +1,7 @@
 package Build;
 
 public class Penguin {
-    private static int[] position = {2,8,7};
+    //private static int[] position = {2,8,7};
     private static BoardAndMovement bm;
     int[] location = new int[4];
     Penguin(BoardAndMovement bam) { 
@@ -13,10 +13,10 @@ public class Penguin {
         int[][] directions = {{0,-1,1},{0,1,-1},{-1,0,1},{1,0,-1},{1,-1,0},{-1,1,0}};
         int[] desired = new int[3];
         for(int[] i : directions) {
-            desired[0] = position[0] + i[0];
-            desired[1] = position[1] + i[1];
-            desired[2] = position[2] + i[2];
-            if(bm.validMove(position, desired, i) == true) {
+            desired[0] = location[0] + i[0];
+            desired[1] = location[1] + i[1];
+            desired[2] = location[2] + i[2];
+            if(bm.validMove(location, desired, i) == true) {
                 return false;
             } 
         }
