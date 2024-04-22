@@ -2,24 +2,26 @@ package Build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Collections;
+import java.util.List;
 
 public class BoardAndMovement {
     public static ArrayList<int[]> activeSpots = new ArrayList<>();
-    private static ArrayList<Penguin> activePenguins = new ArrayList<>();
+    public static ArrayList<Penguin> activePenguins = new ArrayList<>();
 
     public static void main(String[] args) {
         BoardAndMovement bm = new BoardAndMovement();
-        bm.setStartSpots();
+        bm.setStartSpots(bm.numbers());
+        
         activePenguins.add(new Penguin(bm));
         activePenguins.get(0).setLocation(new int[]{1,8,8});
         activePenguins.get(0).setLocation(new int[]{2,7,8});
         activePenguins.add(new Penguin(bm));
         activePenguins.get(1).setLocation(new int[]{1,8,8});
-        for (Penguin i : activePenguins) {
+        /*for (Penguin i : activePenguins) {
             System.out.println("*" + Arrays.toString(i.location));
         }
-        /*
+        
         activePenguins.get(1).setLocation(new int[]{2,7,8});
         for (Penguin i : activePenguins) {
             System.out.println("*" + Arrays.toString(i.location));
@@ -38,8 +40,21 @@ public class BoardAndMovement {
         activePenguins = p;
     }
 
-    public void setStartSpots(){
-        activeSpots.clear();
+    //NOTE: TESTING METHOD
+    //Used to test the setStartSpots method
+    public List<Integer> numbers() {
+        List<Integer> fishTiles = new ArrayList<>();
+        fishTiles.clear();
+        for (int i = 0; i < 30; i++) fishTiles.add(1);
+        for (int i = 0; i < 20; i++) fishTiles.add(2);
+        for (int i = 0; i < 10; i++) fishTiles.add(3);
+        Collections.shuffle(fishTiles);
+        return fishTiles;
+    }
+/* 
+    //Commented out 4/22/24
+    //Should be unnecessary
+    public void setStartSpots() {
         Random rnd = new Random();
         int oneFish = 30;
         int twoFish = 20;
@@ -96,7 +111,33 @@ public class BoardAndMovement {
                 q++;
                 s--;
             }
-        }            
+        }
+    } */
+    public void setStartSpots(List<Integer> fishTiles) {
+        activeSpots.clear();
+        int q = 5;
+        int r = 1;
+        int s = 11;
+        int fishIndex = 0;
+        for (int row = 0; row < 8; row++) {
+            int numColsInRow = row % 2 == 0 ? 7 : 8;
+            for (int col = 0; col < numColsInRow; col++) {
+                activeSpots.add(new int[]{q,r,s,fishTiles.get(fishIndex)});
+                q++;
+                s--;
+                fishIndex++;
+            }
+            for (int col = 0; col < numColsInRow; col++) {
+                q--;
+                s++;
+            }
+            if(numColsInRow == 7) {
+                q--;
+            } else {
+                s--;
+            }
+            r++;
+        }
     }
 
     //takes two int[] of 3 values and returns an int[] of the direction between the two points
@@ -143,7 +184,7 @@ public class BoardAndMovement {
             return false;
         
         while (activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, current, 0,3))) {//Code via https://stackoverflow.com/questions/4849051/using-contains-on-an-arraylist-with-integer-arrays
-            System.out.println(Arrays.toString(current));
+            //System.out.println(Arrays.toString(current));
             
             //if the space is already occupied by a different penguin
             if(!(activePenguins.stream().filter(a -> Arrays.equals(a.location, 0, 3, current, 0,3)).allMatch(a -> a == p)))
@@ -158,7 +199,7 @@ public class BoardAndMovement {
                 }
             }
         }
-        System.out.println("Exitted loop");
+        //System.out.println("Exitted loop");
         return false;
     }
         

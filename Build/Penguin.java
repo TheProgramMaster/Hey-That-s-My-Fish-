@@ -1,6 +1,9 @@
 package Build;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Penguin {
     BoardAndMovement bm;
@@ -28,14 +31,32 @@ public class Penguin {
     //Returns false the move cannot be made  
     public boolean setLocation(int[] newLocation) {
         //if a location hasn't been set yet
-        //TO DO: Add 1 fish logic
-        if(location[0] == 0 && 
-        BoardAndMovement.activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, newLocation, 0,3))) {
-            location = Arrays.copyOf(newLocation,newLocation.length);
-            return true;
+
+        if(location[0] == 0) {
+            if (BoardAndMovement.activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, newLocation, 0,3))
+            && BoardAndMovement.activePenguins.stream().noneMatch(a -> Arrays.equals(a.location, 0, 3, newLocation, 0,3)))
+            {
+                int[] aSpot = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst().get();
+                if(aSpot[3] == 1) {
+                    location = newLocation;
+                    return true;
+                }
+            }
+
+            //All below for printing tests 
+            //Can be deleted once testing is complete
+            Optional<int[]> b = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst();
+            if(b.isPresent()) {
+                System.out.println(Arrays.toString(b.get())+ " is occupied or not 1-fish");
+            } else {
+                System.out.println(Arrays.toString(newLocation) + " is missing");
+            }  
+
+            return false;
         }
+        
         if(bm.validMove(this, newLocation)) {
-            System.out.println("\t" + Arrays.toString(location));
+            //System.out.println("\t" + Arrays.toString(location));
             bm.removeSpot(location);
             location = newLocation;
             return true;

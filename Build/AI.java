@@ -7,6 +7,8 @@ public class AI {
     ArrayList<Penguin> TEMP = new ArrayList<>();
 
     //NOTE: Does not give penguin the amount of fish as of 4/21/24
+    //NOTE 4/22/24: As written so far, penguin does not need the amount of fish
+    //That should be handled in the Person class?  
     public void randomMoveOneSpace() {
         Penguin p = TEMP.get(rand.nextInt(0,TEMP.size()));
         ArrayList<int[]> validDirections = new ArrayList<>();
@@ -27,6 +29,6 @@ public class AI {
                 possibleLocation[i] += p.location[i];
             }
             p.setLocation(possibleLocation);
-        }  
+        }
     }
 }
