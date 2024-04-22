@@ -5,10 +5,35 @@ import java.util.Arrays;
 public class AI {
     Random rand = new Random();
     ArrayList<Penguin> TEMP = new ArrayList<>();
+/*
+    public static void main(String[] args) {
+        for(int i = 0; i < 100; i++) {
+            AI ai = new AI();
+            BoardAndMovement bm = new BoardAndMovement();
+            bm.setStartSpots(bm.numbers());
+            Penguin p1 = new Penguin(bm);
+            //Penguin p2 = new Penguin(bm);
+            p1.setLocation(new int[]{5,5,7});
+            if(p1.location[0] == 0) {
+                continue;
+            }
+    
+            ai.TEMP.add(p1);
+            //TEMP.add(p2);
+            bm.setPenguins(ai.TEMP);
+            System.out.println("Before: " + Arrays.toString(ai.TEMP.get(0).location));
+            if(ai.randomMove() == true) {
+                System.out.println("After: " + Arrays.toString(ai.TEMP.get(0).location));
+            } else {
+                System.out.println("\t\t\t\t\t\t\tERROR: " + Arrays.toString(ai.TEMP.get(0).location));
+            }
+            
+        }
+    }
+    */
 
     //NOTE: Does not give penguin the amount of fish as of 4/21/24
     //NOTE 4/22/24: As written so far, penguin does not need the amount of fish
-    //That should be handled in the Person class?  
     public void randomMoveOneSpace() {
         Penguin p = TEMP.get(rand.nextInt(0,TEMP.size()));
         ArrayList<int[]> validDirections = new ArrayList<>();
@@ -30,5 +55,41 @@ public class AI {
             }
             p.setLocation(possibleLocation);
         }
+    }
+
+    //Returns false only if there is an unexpected error
+    public boolean randomMove() {
+        Penguin p = TEMP.get(rand.nextInt(0,TEMP.size()));
+        ArrayList<int[]> validArrayList = new ArrayList<>();
+        int[] possibleLocation = new int[3];
+        for (int[] i : p.directions) {
+            for(int j = 0; j < 3; j++) {
+                possibleLocation[j] = p.location[j] + i[j];
+            }
+            if(p.bm.validMove(p, possibleLocation)) {
+                validArrayList.add(i);
+            }
+        }
+
+        int[] direction = validArrayList.get(rand.nextInt(0,validArrayList.size()));
+        int max = 10; //The farthest possible distance
+        while(max > 0) {
+            possibleLocation[0] = p.location[0] + (direction[0]*max);
+            possibleLocation[1] = p.location[1] + (direction[1]*max);
+            possibleLocation[2] = p.location[2] + (direction[2]*max);
+            if(p.bm.validMove(p, possibleLocation)) { 
+                System.out.println("Max: " + max + "\t" + Arrays.toString(possibleLocation));
+                break;
+            }
+            max--;
+        }
+
+        max = rand.nextInt(1,max+1);
+        possibleLocation[0] = p.location[0] + (direction[0]*max);
+        possibleLocation[1] = p.location[1] + (direction[1]*max);
+        possibleLocation[2] = p.location[2] + (direction[2]*max);
+
+        return p.setLocation(possibleLocation);
+        
     }
 }
