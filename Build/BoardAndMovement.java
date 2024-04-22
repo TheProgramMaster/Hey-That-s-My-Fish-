@@ -6,10 +6,36 @@ import java.util.Random;
 
 public class BoardAndMovement {
     public static ArrayList<int[]> activeSpots = new ArrayList<>();
-    private static ArrayList<Penguin> activePenguins;
+    private static ArrayList<Penguin> activePenguins = new ArrayList<>();
 
-    BoardAndMovement(ArrayList<Penguin> penguins) {
-        activePenguins = penguins;
+    public static void main(String[] args) {
+        BoardAndMovement bm = new BoardAndMovement();
+        bm.setStartSpots();
+        activePenguins.add(new Penguin(bm));
+        activePenguins.get(0).setLocation(new int[]{1,8,8});
+        activePenguins.get(0).setLocation(new int[]{2,7,8});
+        activePenguins.add(new Penguin(bm));
+        activePenguins.get(1).setLocation(new int[]{1,8,8});
+        for (Penguin i : activePenguins) {
+            System.out.println("*" + Arrays.toString(i.location));
+        }
+        /*
+        activePenguins.get(1).setLocation(new int[]{2,7,8});
+        for (Penguin i : activePenguins) {
+            System.out.println("*" + Arrays.toString(i.location));
+        }*/
+        //activePenguins.get(1).setLocation(new int[]{});
+        //activePenguins.get(0).setLocation(new int[]{2,7,8});
+
+        //System.out.println(Arrays.toString(activePenguins.get(0).location) + " equals: " + 
+        //bm.match(activePenguins.get(0).location));
+        //System.out.println(bm.validMove(activePenguins.get(0), new int[]{2,7,8}, new int[]{1,-1,0}));
+
+        
+    }
+
+    public void setPenguins(ArrayList<Penguin> p) {
+        activePenguins = p;
     }
 
     public void setStartSpots(){
@@ -100,49 +126,40 @@ public class BoardAndMovement {
     }
 
     public void removeSpot(int[] oldLocation){ 
-        for (int[] tempArray : activeSpots) {
-            if(Arrays.equals(Arrays.copyOf(tempArray,3), oldLocation))
-            {
-                activeSpots.remove(tempArray);
-                System.out.println(Arrays.toString(oldLocation) + " removed successfully");
-                break;
-            }
-            else if(activeSpots.indexOf(tempArray) == activeSpots.size()-1){
-                System.out.println(Arrays.toString(oldLocation) + " is not in the array");
-            }
-        }
+        if(activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, oldLocation, 0,3)))
+            System.out.println(Arrays.toString(oldLocation) + " removed successfully");
+        else 
+            System.out.println(Arrays.toString(oldLocation) + " is not in the array");
     }
 
 
     //NOTE: Only works if you do not hand the actual memory address from activeSpots
     //If current's address is in activeSpots, current's values will change, messing up the board
-    public boolean validMove(int[] current, int[] desired, int[] direction) {
-        //if the space is already occupied
-        for (Penguin p : activePenguins) {
-            if(Arrays.equals(Arrays.copyOf(p.location,3),current))
-                return false;
-        }
+    public boolean validMove(Penguin p, int[] desired) {
+        //System.out.println("~" + p + "~");
+        int[] current = Arrays.copyOf(p.location, p.location.length);
+        int[] direction = getDirection(p.location, desired);
+        if(direction == null)
+            return false;
         
-        //Only continue if activeSpots contains the equivelent array
-        for (int[] tempArray : activeSpots) { 
-            if(Arrays.equals(Arrays.copyOf(tempArray,3), current)) {
-                break;
-            }
-            else if(tempArray.equals(activeSpots.get(activeSpots.size()-1)))
-                {
-                    return false;
-                }
-        }
+        while (activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, current, 0,3))) {//Code via https://stackoverflow.com/questions/4849051/using-contains-on-an-arraylist-with-integer-arrays
+            System.out.println(Arrays.toString(current));
+            
+            //if the space is already occupied by a different penguin
+            if(!(activePenguins.stream().filter(a -> Arrays.equals(a.location, 0, 3, current, 0,3)).allMatch(a -> a == p)))
+                return false;
 
-        if(Arrays.equals(current,desired))
-        {
-            return true;
-        }
-        else {
-            for(int i = 0; i < 3; i++) {
-                current[i] += direction[i];
+            if(Arrays.equals(current, 0, 3, desired, 0,3)) {
+                return true;
             }
-            return validMove(current, desired, direction);
+            else {
+                for(int i = 0; i < 3; i++) {
+                    current[i] += direction[i];
+                }
+            }
         }
+        System.out.println("Exitted loop");
+        return false;
     }
+        
 }
