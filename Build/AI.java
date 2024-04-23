@@ -2,9 +2,45 @@ package Build;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
+
 public class AI {
+    BoardAndMovement bm;
+    AI(){}
+    AI(BoardAndMovement bm) {
+        this.bm = bm;
+    }
     Random rand = new Random();
     ArrayList<Penguin> TEMP = new ArrayList<>();
+
+    public static void main(String[] args) {
+        for (int j = 0; j < 1000; j++) {
+            BoardAndMovement bm = new BoardAndMovement();
+        AI ai = new AI(bm);
+        bm.setStartSpots(bm.numbers());
+        
+        if(ai.randomStart() == false) {
+            for (Penguin i : ai.TEMP) {
+                System.out.println(Arrays.toString(i.location));
+            }
+        }
+        if(ai.randomStart() == false) {
+            for (Penguin i : ai.TEMP) {
+                System.out.println(Arrays.toString(i.location));
+            }
+        }
+        if(ai.randomStart() == false) {
+            for (Penguin i : ai.TEMP) {
+                System.out.println(Arrays.toString(i.location));
+            }
+        }
+        if(ai.randomStart() == false) {
+            for (Penguin i : ai.TEMP) {
+                System.out.println(Arrays.toString(i.location));
+            }
+        }
+        }
+        
+    }
 /*
     public static void main(String[] args) {
         for(int i = 0; i < 100; i++) {
@@ -90,6 +126,19 @@ public class AI {
         possibleLocation[2] = p.location[2] + (direction[2]*max);
 
         return p.setLocation(possibleLocation);
+    }
+
+    //Places first unplaced penguin onto the board
+    public boolean randomStart() {
         
+        //Fail safe: if don't need to add another penguin just return true
+        if(TEMP.size() >= 4)
+            return true;
+        Penguin p = new Penguin(bm);
+        TEMP.add(p);
+        int[][] start = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 3,4,new int[]{0,0,0,1},3,4)).toArray(size -> new int[size][4]);
+        
+        //NOTE: Gives Penguin the actual BoardAndMovement spot 
+        return p.setLocation(start[rand.nextInt(0,start.length)]);
     }
 }
