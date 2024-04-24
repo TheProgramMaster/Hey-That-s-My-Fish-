@@ -4,20 +4,51 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class BoardAndMovement {
-    public static ArrayList<int[]> activeSpots = new ArrayList<>();
-    public static ArrayList<Penguin> activePenguins = new ArrayList<>();
+    public ArrayList<int[]> activeSpots = new ArrayList<>();
+    public ArrayList<Penguin> activePenguins = new ArrayList<>();
 
     public static void main(String[] args) {
         BoardAndMovement bm = new BoardAndMovement();
         bm.setStartSpots(bm.numbers());
         
-        activePenguins.add(new Penguin(bm));
-        activePenguins.get(0).setLocation(new int[]{1,8,8});
-        activePenguins.get(0).setLocation(new int[]{2,7,8});
-        activePenguins.add(new Penguin(bm));
-        activePenguins.get(1).setLocation(new int[]{1,8,8});
+        bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+        /*bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+        bm.activePenguins.add(new Penguin(bm));
+
+        bm.activePenguins.get(0).setLocation(new int[]{1,8,8});
+        bm.activePenguins.get(1).setLocation(new int[]{5,1,11});
+        bm.activePenguins.get(2).setLocation(new int[]{8,8,1});
+        bm.activePenguins.get(3).setLocation(new int[]{11,1,5});
+        bm.activePenguins.get(4).setLocation(new int[]{3,5,9});
+        bm.activePenguins.get(5).setLocation(new int[]{5,8,4});
+        bm.activePenguins.get(6).setLocation(new int[]{8,5,4});
+        bm.activePenguins.get(7).setLocation(new int[]{6,3,8}); */
+        bm.activePenguins.get(0).setLocation(new int[]{6,4,7});
+        bm.activePenguins.get(1).setLocation(new int[]{6,4,7});
+
+        bm.activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, new int[]{10,1,6}, 0,3));
+        bm.activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, new int[]{10,2,5}, 0,3));
+        bm.activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, new int[]{9,3,5}, 0,3));
+        bm.activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, new int[]{9,4,4}, 0,3));
+        bm.activeSpots.removeIf(a -> Arrays.equals(a, 0, 3, new int[]{10,4,3}, 0,3));
+
+        ArrayList<int[]> unreachable = bm.checkForIsolation();
+        for (int[] is : unreachable) {
+            System.out.println(Arrays.toString(is));
+        }
+            System.out.println(unreachable.size());
+        
+        //bm.activePenguins.get(0).setLocation(new int[]{2,7,8});
+        //bm.activePenguins.add(new Penguin(bm));
+        //bm.activePenguins.get(1).setLocation(new int[]{1,8,8});
         /*for (Penguin i : activePenguins) {
             System.out.println("*" + Arrays.toString(i.location));
         }
@@ -36,19 +67,21 @@ public class BoardAndMovement {
         
     }
 
-    public void setPenguins(ArrayList<Penguin> p) {
-        activePenguins = p;
+    public void addPenguins(Penguin p) {
+        activePenguins.add(p);
     }
 
     //NOTE: TESTING METHOD
     //Used to test the setStartSpots method
     public List<Integer> numbers() {
+
         List<Integer> fishTiles = new ArrayList<>();
         fishTiles.clear();
-        for (int i = 0; i < 30; i++) fishTiles.add(1);
+        for (int i = 0; i < 60; i++) fishTiles.add(1);
+        /*for (int i = 0; i < 30; i++) fishTiles.add(1);
         for (int i = 0; i < 20; i++) fishTiles.add(2);
         for (int i = 0; i < 10; i++) fishTiles.add(3);
-        Collections.shuffle(fishTiles);
+        Collections.shuffle(fishTiles);*/
         return fishTiles;
     }
 /* 
@@ -115,6 +148,7 @@ public class BoardAndMovement {
     } */
     public void setStartSpots(List<Integer> fishTiles) {
         activeSpots.clear();
+        activePenguins.clear();
         int q = 5;
         int r = 1;
         int s = 11;
@@ -174,33 +208,68 @@ public class BoardAndMovement {
     }
 
 
-    //NOTE: Only works if you do not hand the actual memory address from activeSpots
-    //If current's address is in activeSpots, current's values will change, messing up the board
     public boolean validMove(Penguin p, int[] desired) {
-        //System.out.println("~" + p + "~");
         int[] current = Arrays.copyOf(p.location, p.location.length);
         int[] direction = getDirection(p.location, desired);
         if(direction == null)
             return false;
         
+        //while there is an int[] in activeSpots matching current 
         while (activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, current, 0,3))) {//Code via https://stackoverflow.com/questions/4849051/using-contains-on-an-arraylist-with-integer-arrays
-            //System.out.println(Arrays.toString(current));
             
             //if the space is already occupied by a different penguin
             if(!(activePenguins.stream().filter(a -> Arrays.equals(a.location, 0, 3, current, 0,3)).allMatch(a -> a == p)))
                 return false;
 
+            //If the desired has been located
             if(Arrays.equals(current, 0, 3, desired, 0,3)) {
                 return true;
             }
             else {
-                for(int i = 0; i < 3; i++) {
-                    current[i] += direction[i];
-                }
+                addAll(current, direction);
             }
         }
-        //System.out.println("Exitted loop");
+
         return false;
     }
-        
+
+    //TO DO: Test more and optimize space (time seems good enough)
+    //Tested 1 Worst case (8 penguins full board) (1 penguin full board), 1 cornered case (1 penguin), and 1 true isolated island (1 penguin)
+    public ArrayList<int[]> checkForIsolation() {
+        ArrayList<int[]> unreachable = new ArrayList<>();
+        unreachable.addAll(activeSpots);
+        final int[][] directions = {{0,-1,1},{0,1,-1},{-1,0,1},{1,0,-1},{1,-1,0},{-1,1,0}};
+        ArrayList<int[]> toVisit = new ArrayList<>();
+        ArrayList<int[]> visited = new ArrayList<>();
+        ArrayList<Penguin> tempPenguins = new ArrayList<>();
+        tempPenguins.addAll(activePenguins);
+        while(!tempPenguins.isEmpty()) {
+            Penguin p = tempPenguins.remove(0);
+            toVisit.add(Arrays.copyOf(p.location, 3));
+            while(!toVisit.isEmpty()) {
+                for (int i = 0; i < directions.length; i++) {
+                    int[] nextSpace = addAll(Arrays.copyOf(toVisit.get(0),3), directions[i]);
+                    if(activeSpots.stream().anyMatch(a -> Arrays.equals(a,0,3,nextSpace,0,3))) {
+                        unreachable.removeIf(a -> Arrays.equals(a,0,3, toVisit.get(0),0,3));
+                        if(visited.stream().noneMatch(a -> Arrays.equals(a,0,3, nextSpace,0,3))) {
+                            toVisit.add(Arrays.copyOf(nextSpace, nextSpace.length));
+                            Optional<Penguin> penPlace = activePenguins.stream().filter(a -> Arrays.equals(a.location, 0, 3, nextSpace, 0,3)).findFirst();
+                            if(penPlace.isPresent()) {
+                                tempPenguins.remove(penPlace.get());
+                            }
+                        }
+                    }
+                }
+                visited.add(toVisit.remove(0));
+            } 
+        }
+        return unreachable;
+    }
+
+    private static int[] addAll(int[] main, int[] b) {
+        for(int i = 0; i < 3; i++) {
+            main[i] += b[i];
+        }
+        return main;
+    }
 }

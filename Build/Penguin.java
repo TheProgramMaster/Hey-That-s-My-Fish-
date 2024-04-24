@@ -31,16 +31,60 @@ public class Penguin {
         //if a location hasn't been set yet
 
         if(location[0] == 0) {
-            if (BoardAndMovement.activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, newLocation, 0,3))
-            && BoardAndMovement.activePenguins.stream().noneMatch(a -> Arrays.equals(a.location, 0, 3, newLocation, 0,3)))
+            if (bm.activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, newLocation, 0,3))
+            && bm.activePenguins.stream().noneMatch(a -> Arrays.equals(a.location, 0, 3, newLocation, 0,3)))
             {
-                int[] aSpot = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst().get();
+                int[] aSpot = bm.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst().get();
                 if(aSpot[3] == 1) {
                     location = newLocation;
                     return true;
                 }
             }
 
+            //All below for printing tests 
+            //Can be deleted once testing is complete
+            Optional<int[]> b = bm.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst();
+            if(b.isPresent()) {
+                System.out.println(Arrays.toString(b.get())+ " is occupied or not 1-fish");
+            } else {
+                System.out.println(Arrays.toString(newLocation) + " is missing");
+            }  
+
+            return false;
+        }
+        
+        if(bm.validMove(this, newLocation)) {
+            bm.removeSpot(location);
+            location = newLocation;
+            return true;
+        }
+        System.out.println(Arrays.toString(newLocation) + " is not a valid location");
+        return false;
+    }
+
+    /*
+     public boolean setLocation(int[] newLocation) {
+        //if a location hasn't been set yet
+
+        if(location[0] == 0) {
+            if (BoardAndMovement.activeSpots.stream().anyMatch(a -> Arrays.equals(a, 0, 3, newLocation, 0,3))) {
+                for(Penguin p : BoardAndMovement.activePenguins) {
+                    if(Arrays.equals(p.location,newLocation)) {
+                        System.out.println(Arrays.toString(newLocation) + " is occupied");
+                        return false;
+                    }
+                }
+                int[] aSpot = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst().get();
+                if(aSpot[3] == 1) {
+                    System.out.println(Arrays.toString(newLocation) + " is not occupied and is a one fish");
+                    location = newLocation;
+                    return true;
+                } else {
+                    System.out.println(Arrays.toString(newLocation) + " is not occupied but has " + aSpot[3] + " fish");
+                    return false;
+                }
+            }
+            
             //All below for printing tests 
             //Can be deleted once testing is complete
             Optional<int[]> b = BoardAndMovement.activeSpots.stream().filter(a -> Arrays.equals(a, 0, 3, newLocation, 0,3)).findFirst();
@@ -62,4 +106,5 @@ public class Penguin {
         System.out.println(Arrays.toString(newLocation) + " is not a valid location");
         return false;
     }
+     */
 }
